@@ -1,4 +1,4 @@
-package com.sendkit;
+package dev.sendkit;
 
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.*;

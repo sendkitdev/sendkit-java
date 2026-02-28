@@ -1,4 +1,4 @@
-package com.sendkit;
+package dev.sendkit;
 
 import java.util.List;
 import java.util.Map;

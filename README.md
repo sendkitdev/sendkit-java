@@ -1,6 +1,6 @@
 # SendKit Java SDK
 
-Official Java SDK for the [SendKit](https://sendkit.com) email API.
+Official Java SDK for the [SendKit](https://sendkit.dev) email API.
 
 ## Requirements
 
@@ -12,7 +12,7 @@ Official Java SDK for the [SendKit](https://sendkit.com) email API.
 
 ```xml
 <dependency>
-    <groupId>com.sendkit</groupId>
+    <groupId>dev.sendkit</groupId>
     <artifactId>sendkit</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -21,14 +21,14 @@ Official Java SDK for the [SendKit](https://sendkit.com) email API.
 ### Gradle
 
 ```groovy
-implementation 'com.sendkit:sendkit:1.0.0'
+implementation 'dev.sendkit:sendkit:1.0.0'
 ```
 
 ## Usage
 
 ```java
-import com.sendkit.SendKit;
-import com.sendkit.Emails;
+import dev.sendkit.SendKit;
+import dev.sendkit.Emails;
 
 import java.util.List;
 

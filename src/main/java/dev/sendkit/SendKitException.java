@@ -1,4 +1,4 @@
-package com.sendkit;
+package dev.sendkit;
 
 public class SendKitException extends RuntimeException {
 

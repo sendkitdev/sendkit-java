@@ -4,14 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.sendkit</groupId>
+    <groupId>dev.sendkit</groupId>
     <artifactId>sendkit</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>SendKit Java SDK</name>
     <description>Official Java SDK for the SendKit email API</description>
-    <url>https://sendkit.com</url>
+    <url>https://sendkit.dev</url>
 
     <licenses>
         <license>

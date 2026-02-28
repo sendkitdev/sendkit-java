@@ -1,4 +1,4 @@
-package com.sendkit;
+package dev.sendkit;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,7 +11,7 @@ import com.google.gson.GsonBuilder;
 
 public class SendKit {
 
-    private static final String DEFAULT_BASE_URL = "https://api.sendkit.com";
+    private static final String DEFAULT_BASE_URL = "https://api.sendkit.dev";
 
     final HttpClient httpClient;
     final String baseUrl;
