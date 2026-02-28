@@ -46,6 +46,13 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: GPG_PASSPHRASE
 
+      - name: Publish GPG key to keyservers
+        run: |
+          gpg --list-keys --keyid-format long
+          gpg --keyserver keyserver.ubuntu.com --send-keys $(gpg --list-keys --keyid-format long --with-colons | grep '^pub' | cut -d':' -f5)
+          gpg --keyserver keys.openpgp.org --send-keys $(gpg --list-keys --keyid-format long --with-colons | grep '^pub' | cut -d':' -f5)
+          sleep 10
+
       - name: Publish to Maven Central
         run: mvn deploy --batch-mode -Prelease -DskipTests
         env:
