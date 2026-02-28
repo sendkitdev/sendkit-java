@@ -48,10 +48,18 @@ jobs:
 
       - name: Publish GPG key to keyservers
         run: |
-          gpg --list-keys --keyid-format long
-          gpg --keyserver keyserver.ubuntu.com --send-keys $(gpg --list-keys --keyid-format long --with-colons | grep '^pub' | cut -d':' -f5)
-          gpg --keyserver keys.openpgp.org --send-keys $(gpg --list-keys --keyid-format long --with-colons | grep '^pub' | cut -d':' -f5)
-          sleep 10
+          KEY_ID=$(gpg --list-keys --keyid-format long --with-colons | grep '^pub' | cut -d':' -f5)
+          echo "Publishing key $KEY_ID to keyservers..."
+          gpg --keyserver keyserver.ubuntu.com --send-keys $KEY_ID
+          gpg --keyserver keys.openpgp.org --send-keys $KEY_ID
+          echo "Waiting for keyserver propagation..."
+          for i in $(seq 1 12); do
+            if gpg --keyserver keyserver.ubuntu.com --recv-keys $KEY_ID 2>&1 | grep -q "not changed\|imported"; then
+              echo "Key found on keyserver after ${i}0 seconds"
+              break
+            fi
+            sleep 10
+          done
 
       - name: Publish to Maven Central
         run: mvn deploy --batch-mode -Prelease -DskipTests
