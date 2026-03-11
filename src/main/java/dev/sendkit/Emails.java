@@ -39,6 +39,10 @@ public class Emails {
             this.subject = subject;
         }
 
+        public SendEmailParams(String from, String to, String subject) {
+            this(from, List.of(to), subject);
+        }
+
         public SendEmailParams html(String html) { this.html = html; return this; }
         public SendEmailParams text(String text) { this.text = text; return this; }
         public SendEmailParams cc(List<String> cc) { this.cc = cc; return this; }
