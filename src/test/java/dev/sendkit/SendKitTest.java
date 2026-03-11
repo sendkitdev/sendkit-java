@@ -56,6 +56,48 @@ class SendKitTest {
     }
 
     @Test
+    void testSendEmailWithSingleStringTo() {
+        server.createContext("/emails", exchange -> {
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            assertTrue(body.contains("\"to\":[\"to@example.com\"]"));
+
+            String response = "{\"id\":\"single_to_123\"}";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        });
+
+        Emails.SendEmailResponse result = client().emails().send(
+                new Emails.SendEmailParams("sender@example.com", "to@example.com", "Hello")
+                        .html("<p>Hi</p>")
+        );
+
+        assertEquals("single_to_123", result.getId());
+    }
+
+    @Test
+    void testSendEmailWithDisplayName() {
+        server.createContext("/emails", exchange -> {
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            assertTrue(body.contains("Bob \\u003cto@example.com\\u003e") || body.contains("Bob <to@example.com>"));
+
+            String response = "{\"id\":\"display_name_123\"}";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        });
+
+        Emails.SendEmailResponse result = client().emails().send(
+                new Emails.SendEmailParams("sender@example.com", "Bob <to@example.com>", "Hello")
+                        .html("<p>Hi</p>")
+        );
+
+        assertEquals("display_name_123", result.getId());
+    }
+
+    @Test
     void testSendEmailWithAllOptions() {
         server.createContext("/emails", exchange -> {
             String body = new String(exchange.getRequestBody().readAllBytes());
