@@ -33,7 +33,7 @@ class SendKitTest {
 
     @Test
     void testSendEmail() {
-        server.createContext("/v1/emails", exchange -> {
+        server.createContext("/emails", exchange -> {
             String body = new String(exchange.getRequestBody().readAllBytes());
             assertTrue(body.contains("\"from\":\"sender@example.com\""));
             assertTrue(body.contains("\"subject\":\"Hello\""));
@@ -57,7 +57,7 @@ class SendKitTest {
 
     @Test
     void testSendEmailWithAllOptions() {
-        server.createContext("/v1/emails", exchange -> {
+        server.createContext("/emails", exchange -> {
             String body = new String(exchange.getRequestBody().readAllBytes());
             assertTrue(body.contains("\"cc\":[\"cc@example.com\"]"));
             assertTrue(body.contains("\"bcc\":[\"bcc@example.com\"]"));
@@ -88,7 +88,7 @@ class SendKitTest {
 
     @Test
     void testSendMimeEmail() {
-        server.createContext("/v1/emails/mime", exchange -> {
+        server.createContext("/emails/mime", exchange -> {
             String body = new String(exchange.getRequestBody().readAllBytes());
             assertTrue(body.contains("\"envelope_from\":\"from@example.com\""));
             assertTrue(body.contains("\"envelope_to\":\"to@example.com\""));
@@ -110,7 +110,7 @@ class SendKitTest {
 
     @Test
     void testApiError() {
-        server.createContext("/v1/emails", exchange -> {
+        server.createContext("/emails", exchange -> {
             String response = "{\"name\":\"validation_error\",\"message\":\"Invalid email\",\"status_code\":422}";
             exchange.sendResponseHeaders(422, response.length());
             try (OutputStream os = exchange.getResponseBody()) {
@@ -148,7 +148,7 @@ class SendKitTest {
 
     @Test
     void testCustomBaseUrl() {
-        server.createContext("/v1/emails", exchange -> {
+        server.createContext("/emails", exchange -> {
             String response = "{\"id\":\"custom_url\"}";
             exchange.sendResponseHeaders(200, response.length());
             try (OutputStream os = exchange.getResponseBody()) {
@@ -167,7 +167,7 @@ class SendKitTest {
 
     @Test
     void testAttachments() {
-        server.createContext("/v1/emails", exchange -> {
+        server.createContext("/emails", exchange -> {
             String body = new String(exchange.getRequestBody().readAllBytes());
             assertTrue(body.contains("\"filename\":\"test.pdf\""));
             assertTrue(body.contains("\"content\":\"base64data\""));

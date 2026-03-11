@@ -12,11 +12,11 @@ public class Emails {
     }
 
     public SendEmailResponse send(SendEmailParams params) throws SendKitException {
-        return client.post("/v1/emails", params, SendEmailResponse.class);
+        return client.post("/emails", params, SendEmailResponse.class);
     }
 
     public SendMimeEmailResponse sendMime(SendMimeEmailParams params) throws SendKitException {
-        return client.post("/v1/emails/mime", params, SendMimeEmailResponse.class);
+        return client.post("/emails/mime", params, SendMimeEmailResponse.class);
     }
 
     public static class SendEmailParams {
