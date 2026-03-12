@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -231,5 +232,100 @@ class SendKitTest {
         );
 
         assertEquals("attach_123", result.getId());
+    }
+
+    @Test
+    void testNullFieldsAreNotSerialized() {
+        server.createContext("/emails", exchange -> {
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            assertFalse(body.contains("\"text\""), "null text field should not be serialized");
+            assertFalse(body.contains("\"cc\""), "null cc field should not be serialized");
+            assertFalse(body.contains("\"bcc\""), "null bcc field should not be serialized");
+            assertFalse(body.contains("\"reply_to\""), "null reply_to field should not be serialized");
+            assertFalse(body.contains("\"headers\""), "null headers field should not be serialized");
+            assertFalse(body.contains("\"tags\""), "null tags field should not be serialized");
+            assertFalse(body.contains("\"scheduled_at\""), "null scheduled_at field should not be serialized");
+            assertFalse(body.contains("\"attachments\""), "null attachments field should not be serialized");
+
+            String response = "{\"id\":\"no_nulls_123\"}";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        });
+
+        Emails.SendEmailResponse result = client().emails().send(
+                new Emails.SendEmailParams("sender@example.com", "to@example.com", "Hello")
+                        .html("<p>Hi</p>")
+        );
+
+        assertEquals("no_nulls_123", result.getId());
+    }
+
+    @Test
+    void testSendEmailWithMultipleToRecipients() {
+        server.createContext("/emails", exchange -> {
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            assertTrue(body.contains("\"to\":[\"a@example.com\",\"b@example.com\"]"));
+
+            String response = "{\"id\":\"multi_to_123\"}";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        });
+
+        Emails.SendEmailResponse result = client().emails().send(
+                new Emails.SendEmailParams("sender@example.com", List.of("a@example.com", "b@example.com"), "Hello")
+                        .html("<p>Hi</p>")
+        );
+
+        assertEquals("multi_to_123", result.getId());
+    }
+
+    @Test
+    void testSendEmailWithHeaders() {
+        server.createContext("/emails", exchange -> {
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            assertTrue(body.contains("\"headers\":{\"X-Custom\":\"value\",\"X-Another\":\"test\"}") ||
+                    body.contains("\"headers\":{\"X-Another\":\"test\",\"X-Custom\":\"value\"}"));
+
+            String response = "{\"id\":\"headers_123\"}";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        });
+
+        Emails.SendEmailResponse result = client().emails().send(
+                new Emails.SendEmailParams("sender@example.com", "to@example.com", "Hello")
+                        .html("<p>Hi</p>")
+                        .headers(Map.of("X-Custom", "value", "X-Another", "test"))
+        );
+
+        assertEquals("headers_123", result.getId());
+    }
+
+    @Test
+    void testSendEmailWithTags() {
+        server.createContext("/emails", exchange -> {
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            assertTrue(body.contains("\"tags\":[\"welcome\",\"onboarding\"]") ||
+                    body.contains("\"tags\":[\"onboarding\",\"welcome\"]"));
+
+            String response = "{\"id\":\"tags_123\"}";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        });
+
+        Emails.SendEmailResponse result = client().emails().send(
+                new Emails.SendEmailParams("sender@example.com", "to@example.com", "Hello")
+                        .html("<p>Hi</p>")
+                        .tags(List.of("welcome", "onboarding"))
+        );
+
+        assertEquals("tags_123", result.getId());
     }
 }
