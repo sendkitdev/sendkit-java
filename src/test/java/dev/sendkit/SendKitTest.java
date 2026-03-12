@@ -104,7 +104,7 @@ class SendKitTest {
             String body = new String(exchange.getRequestBody().readAllBytes());
             assertTrue(body.contains("\"cc\":[\"cc@example.com\"]"));
             assertTrue(body.contains("\"bcc\":[\"bcc@example.com\"]"));
-            assertTrue(body.contains("\"reply_to\":\"reply@example.com\""));
+            assertTrue(body.contains("\"reply_to\":[\"reply@example.com\"]"));
             assertTrue(body.contains("\"name\":\"category\""));
             assertTrue(body.contains("\"value\":\"welcome\""));
             assertTrue(body.contains("\"scheduled_at\":\"2025-01-01T00:00:00Z\""));
@@ -330,5 +330,93 @@ class SendKitTest {
         );
 
         assertEquals("tags_123", result.getId());
+    }
+
+    @Test
+    void testSendEmailWithReplyToList() {
+        server.createContext("/emails", exchange -> {
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            assertTrue(body.contains("\"reply_to\":[\"reply1@example.com\",\"reply2@example.com\"]"));
+
+            String response = "{\"id\":\"reply_list_123\"}";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        });
+
+        Emails.SendEmailResponse result = client().emails().send(
+                new Emails.SendEmailParams("sender@example.com", "to@example.com", "Hello")
+                        .html("<p>Hi</p>")
+                        .replyTo(List.of("reply1@example.com", "reply2@example.com"))
+        );
+
+        assertEquals("reply_list_123", result.getId());
+    }
+
+    @Test
+    void testSendEmailWithCcSingleString() {
+        server.createContext("/emails", exchange -> {
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            assertTrue(body.contains("\"cc\":[\"cc@example.com\"]"));
+
+            String response = "{\"id\":\"cc_single_123\"}";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        });
+
+        Emails.SendEmailResponse result = client().emails().send(
+                new Emails.SendEmailParams("sender@example.com", "to@example.com", "Hello")
+                        .html("<p>Hi</p>")
+                        .cc("cc@example.com")
+        );
+
+        assertEquals("cc_single_123", result.getId());
+    }
+
+    @Test
+    void testSendEmailWithBccSingleString() {
+        server.createContext("/emails", exchange -> {
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            assertTrue(body.contains("\"bcc\":[\"bcc@example.com\"]"));
+
+            String response = "{\"id\":\"bcc_single_123\"}";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        });
+
+        Emails.SendEmailResponse result = client().emails().send(
+                new Emails.SendEmailParams("sender@example.com", "to@example.com", "Hello")
+                        .html("<p>Hi</p>")
+                        .bcc("bcc@example.com")
+        );
+
+        assertEquals("bcc_single_123", result.getId());
+    }
+
+    @Test
+    void testSendEmailWithReplyToSingleString() {
+        server.createContext("/emails", exchange -> {
+            String body = new String(exchange.getRequestBody().readAllBytes());
+            assertTrue(body.contains("\"reply_to\":[\"reply@example.com\"]"));
+
+            String response = "{\"id\":\"reply_single_123\"}";
+            exchange.sendResponseHeaders(200, response.length());
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        });
+
+        Emails.SendEmailResponse result = client().emails().send(
+                new Emails.SendEmailParams("sender@example.com", "to@example.com", "Hello")
+                        .html("<p>Hi</p>")
+                        .replyTo("reply@example.com")
+        );
+
+        assertEquals("reply_single_123", result.getId());
     }
 }
