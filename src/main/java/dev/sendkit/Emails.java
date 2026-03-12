@@ -29,7 +29,7 @@ public class Emails {
         private List<String> bcc;
         private String replyTo;
         private Map<String, String> headers;
-        private List<String> tags;
+        private List<Tag> tags;
         private String scheduledAt;
         private List<Attachment> attachments;
 
@@ -49,7 +49,7 @@ public class Emails {
         public SendEmailParams bcc(List<String> bcc) { this.bcc = bcc; return this; }
         public SendEmailParams replyTo(String replyTo) { this.replyTo = replyTo; return this; }
         public SendEmailParams headers(Map<String, String> headers) { this.headers = headers; return this; }
-        public SendEmailParams tags(List<String> tags) { this.tags = tags; return this; }
+        public SendEmailParams tags(List<Tag> tags) { this.tags = tags; return this; }
         public SendEmailParams scheduledAt(String scheduledAt) { this.scheduledAt = scheduledAt; return this; }
         public SendEmailParams attachments(List<Attachment> attachments) { this.attachments = attachments; return this; }
     }
@@ -65,6 +65,19 @@ public class Emails {
         }
 
         public Attachment contentType(String contentType) { this.contentType = contentType; return this; }
+    }
+
+    public static class Tag {
+        private final String name;
+        private final String value;
+
+        public Tag(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() { return name; }
+        public String getValue() { return value; }
     }
 
     public static class SendEmailResponse {

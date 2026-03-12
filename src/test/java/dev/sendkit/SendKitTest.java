@@ -105,7 +105,8 @@ class SendKitTest {
             assertTrue(body.contains("\"cc\":[\"cc@example.com\"]"));
             assertTrue(body.contains("\"bcc\":[\"bcc@example.com\"]"));
             assertTrue(body.contains("\"reply_to\":\"reply@example.com\""));
-            assertTrue(body.contains("\"tags\":[\"welcome\"]"));
+            assertTrue(body.contains("\"name\":\"category\""));
+            assertTrue(body.contains("\"value\":\"welcome\""));
             assertTrue(body.contains("\"scheduled_at\":\"2025-01-01T00:00:00Z\""));
 
             String response = "{\"id\":\"email_456\"}";
@@ -122,7 +123,7 @@ class SendKitTest {
                         .cc(List.of("cc@example.com"))
                         .bcc(List.of("bcc@example.com"))
                         .replyTo("reply@example.com")
-                        .tags(List.of("welcome"))
+                        .tags(List.of(new Emails.Tag("category", "welcome")))
                         .scheduledAt("2025-01-01T00:00:00Z")
         );
 
@@ -310,8 +311,10 @@ class SendKitTest {
     void testSendEmailWithTags() {
         server.createContext("/emails", exchange -> {
             String body = new String(exchange.getRequestBody().readAllBytes());
-            assertTrue(body.contains("\"tags\":[\"welcome\",\"onboarding\"]") ||
-                    body.contains("\"tags\":[\"onboarding\",\"welcome\"]"));
+            assertTrue(body.contains("\"name\":\"category\""));
+            assertTrue(body.contains("\"value\":\"welcome\""));
+            assertTrue(body.contains("\"name\":\"campaign\""));
+            assertTrue(body.contains("\"value\":\"onboarding\""));
 
             String response = "{\"id\":\"tags_123\"}";
             exchange.sendResponseHeaders(200, response.length());
@@ -323,7 +326,7 @@ class SendKitTest {
         Emails.SendEmailResponse result = client().emails().send(
                 new Emails.SendEmailParams("sender@example.com", "to@example.com", "Hello")
                         .html("<p>Hi</p>")
-                        .tags(List.of("welcome", "onboarding"))
+                        .tags(List.of(new Emails.Tag("category", "welcome"), new Emails.Tag("campaign", "onboarding")))
         );
 
         assertEquals("tags_123", result.getId());
