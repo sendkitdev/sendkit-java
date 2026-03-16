@@ -6,7 +6,7 @@
 
     <groupId>dev.sendkit</groupId>
     <artifactId>sendkit</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.7</version>
     <packaging>jar</packaging>
 
     <name>SendKit Java SDK</name>
